@@ -1,0 +1,17 @@
+FROM python:3.12-alpine
+
+RUN apk add --no-cache ffmpeg ttf-dejavu busybox-extras
+
+WORKDIR /app
+
+COPY ./chelonest/docker/timelapse/run.sh /app/run.sh
+COPY ./chelonest/chelonest_config.py /app/
+COPY ./chelonest/chelonest_timelapse.py /app/
+COPY ./chelonest/docker/timelapse/requirements.txt /app/
+COPY ./chelonest/docker/timelapse/.env /app/
+
+RUN chmod +x /app/*.sh
+
+VOLUME ["/data"]
+
+CMD ["/app/run.sh"]
