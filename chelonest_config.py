@@ -24,10 +24,11 @@ def load_config():
         print("Configuration file has no cameras defined.")
         sys.exit(1)
 
+    set_defaults_timelapse(data)
+    set_defaults_integrations(data)
+ 
     for name in data["cameras"]:
-        set_defaults_timelapse(data["cameras"][name])
         set_defaults_detection(data["cameras"][name])
-        set_defaults_integrations(data)
     return data
   
 def set_defaults_timelapse(CONFIG):

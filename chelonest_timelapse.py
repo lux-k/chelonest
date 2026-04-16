@@ -9,7 +9,6 @@ import shutil
 CONFIG = chelonest_config.load_config()
 
 TL_CONFIG = CONFIG["timelapse"]
-print(TL_CONFIG)
 
 print("Timelapse: frame delay", TL_CONFIG["period"])
 print("Timelapse: start hour", TL_CONFIG["start_hour"])
