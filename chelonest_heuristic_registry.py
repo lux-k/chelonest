@@ -29,12 +29,23 @@ class HeuristicRegistry:
             params = {}
             
             if "parameters" in hconf:
-                params = {k: v for k, v in hconf["parameters"].items()}
+                params["parameters"] = hconf["parameters"]
+#                = {k: v for k, v in hconf["parameters"].items()}
 
             params["processor"] = self._processor
-            if "name" not in params:
+            
+            # send camera information to plugin?
+            
+            if "name" in hconf:
+                params["name"] = hconf["name"]
+            else:
                 params["name"] = hconf["type"]
              
+            if "contexts" in hconf:
+                params["contexts"] = hconf["contexts"]
+            else:
+                params["contexts"] = []
+
             instances.append(cls(**params))
 
         return instances

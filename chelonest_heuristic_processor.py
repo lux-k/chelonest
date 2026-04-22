@@ -9,10 +9,14 @@ import requests
 CONFIG = chelonest_config.load_config()
 
 CAMERA = "spotteds-local"
+CAMERA = "boxies"
 
 class HeuristicProcessor:
     _config = None
     _instances = None
+    current_frame = None
+    last_frame = None
+    
     def __init__(self):
         registry._processor = self
         self._set_config()
@@ -47,10 +51,38 @@ class HeuristicProcessor:
         self._instances = registry.load_heuristic_instances(self._config["heuristics"])
         print(self._instances)
 
+    def plugin_result(self, plugin, detection, data):
+        print("whee")
+        
     def send_motion_data(self, msg):
+        self.last_frame = self.current_frame
+        
+        new_frame = {}
+        if self.last_frame is not None:
+            for state in self.last_frame:
+                if state in self.last_frame:
+                    new_frame[state] = {"score": self.last_frame[state]["score"], "components": {}}
+                    if state in self.camera_config()["state_decay"]:
+                        new_frame[state]["score"] *= self.camera_config()["state_decay"][state]
+                    
+        
         for h in self._instances:
-            h.update(msg)
-            
+            if "detect" in h.contexts:
+                state, result = h.detect(msg)
+                if state not in new_frame:
+                    new_frame[state] = {"score": result["score"], "components": {}}
+                else:
+                    new_frame[state]["score"] += result["score"]
+                new_frame[state]["components"][h.name] = result
+
+        #aggregate
+        for h in self._instances:
+            if "aggregate" in h.contexts:
+                h.aggregate(msg)
+        
+        self.current_frame = new_frame
+        print(self.current_frame)
+        
     def integration_configured(self, section, keys):
         if not "integrations" in CONFIG:
             self.log("No integrations defined.")
@@ -100,11 +132,16 @@ class HeuristicProcessor:
                 self.log("posting to pushover failed - " + str(e))
 
 processor = HeuristicProcessor()
-processor.pushover_send("whee")
-print(CONFIG)
-sys.exit(1)
-processor.frigate_event('nesting', {"score": .92, "duration": 15})
-
+#processor.frigate_event('nesting', {"score": .92, "duration": 15})
+msg = {"ts": 0, "zones": {"Z1": 0, "Z2": 20, "Z3": 0, "Z4": 0, "Z5": 20, "Z6": 0, "Z7": 0, "Z8": 20, "Z9": 0,}}
+processor.send_motion_data(msg)
+processor.send_motion_data(msg)
+processor.send_motion_data(msg)
+processor.send_motion_data(msg)
+processor.send_motion_data(msg)
+processor.send_motion_data(msg)
+processor.send_motion_data(msg)
+sys.exit(0)
 
 client, topic = chelonest_config.mqtt_client(CONFIG, CAMERA + "_heuristic_processor", [CAMERA + "/#"])
 def on_message(client, userdata, message):
@@ -113,10 +150,7 @@ def on_message(client, userdata, message):
     print("Received", msg)
     processor.send_motion_data(msg)
 
+
     
 client.on_message = on_message
 client.loop_forever()
-
-#>>> r = requests.post('http://httpbin.org/post', json={"key": "value"})
-#>>> r.status_code
-

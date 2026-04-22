@@ -8,6 +8,7 @@ COPY ./chelonest/docker/timelapse/run.sh /app/run.sh
 COPY ./chelonest/chelonest_config.py /app/
 COPY ./chelonest/chelonest_timelapse.py /app/
 COPY ./chelonest/docker/timelapse/requirements.txt /app/
+RUN pip install -r requirements.txt
 COPY ./chelonest/docker/timelapse/.env /app/
 
 RUN chmod +x /app/*.sh
