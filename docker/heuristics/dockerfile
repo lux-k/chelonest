@@ -5,12 +5,13 @@ WORKDIR /app
 COPY ./chelonest/docker/heuristics/requirements.txt /app/
 RUN pip install -r requirements.txt
 
-COPY ./chelonest/docker/detector/.env /app/
-COPY ./chelonest/docker/detector/run.sh /app/run.sh
+COPY ./chelonest/docker/heuristics/.env /app/
+COPY ./chelonest/docker/heuristics/run.sh /app/run.sh
 
 COPY ./chelonest/chelonest_config.py /app/
 COPY ./chelonest/chelonest_heuristic*.py /app/
-COPY ./chelonest/plugins /app/
+COPY ./chelonest/chelonest_watchdog.py /app/
+COPY ./chelonest/heuristics /app/
 
 RUN chmod +x /app/*.sh
 
