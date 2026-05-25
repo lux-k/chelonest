@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
 #RUN apk add --no-cache ttf-dejavu busybox-extras
 
@@ -11,7 +11,7 @@ COPY ./chelonest/docker/detector/.env /app/
 COPY ./chelonest/docker/detector/run.sh /app/run.sh
 
 COPY ./chelonest/chelonest_config.py /app/
-COPY ./chelonest/vhelonest_detector.py /app/
+COPY ./chelonest/chelonest_detector.py /app/
 COPY ./chelonest/chelonest_detector_watchdog.py /app/
 
 RUN chmod +x /app/*.sh
