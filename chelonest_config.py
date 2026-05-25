@@ -25,6 +25,7 @@ def load_config():
         sys.exit(1)
 
     set_defaults_timelapse(data)
+    set_defaults_motion(data)
     set_defaults_integrations(data)
  
     for name in data["cameras"]:
@@ -40,6 +41,15 @@ def set_defaults_timelapse(CONFIG):
     else:
         CONFIG["timelapse"] = TL_DEF
         
+def set_defaults_motion(CONFIG):
+    TL_DEF = {"output_dir": "/mnt/motion"}
+    if  "motion" in CONFIG:
+        for k in TL_DEF:
+            if not k in CONFIG["motion"]:
+                CONFIG["motion"][k] = TL_DEF[k]
+    else:
+        CONFIG["motion"] = TL_DEF
+
 def set_defaults_detection(CONFIG):
     ROWS = 3
     COLS = 3
@@ -55,6 +65,9 @@ def set_defaults_detection(CONFIG):
             
     else:
         CONFIG["motion"] = {"zones": {"rows": ROWS, "columns": COLS}}
+
+    if "enabled" not in CONFIG["motion"]:
+        CONFIG["motion"]["enabled"] = False
 
 def set_defaults_integrations(CONFIG):
     FRIG_DEF = {"url": "http://localhost:5000"}
