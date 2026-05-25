@@ -49,6 +49,7 @@ if "mqtt" in CAMERA_CONFIG and CAMERA_CONFIG["mqtt"]:
     print("MQTT: Enabled")
     MQTT_CLIENT, MQTT_TOPIC = chelonest_config.mqtt_client(CONFIG, CAMERA + "_detector")
     MQTT_TOPIC = MQTT_TOPIC + "/" + CAMERA + "/motion"
+    MQTT_CLIENT.loop_start()
     print("MQTT: Topic", MQTT_TOPIC)
 else:
     print("MQTT: Disabled")

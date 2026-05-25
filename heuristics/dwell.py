@@ -39,6 +39,6 @@ class DwellHeuristic:
             
             result["zones"][z] = sum(self.zone_mem[z]) / len(self.zone_mem[z])
             result["score"] = max(result["zones"].values())
-
+    
         return "dwell", result
     

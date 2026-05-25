@@ -8,8 +8,9 @@ import requests
 #this is the global config
 CONFIG = chelonest_config.load_config()
 
-CAMERA = "spotteds-local"
-CAMERA = "boxies"
+CAMERA = "camera"
+if len(sys.argv) > 1:
+    CAMERA = sys.argv[1]
 
 class HeuristicProcessor:
     _config = None
@@ -73,15 +74,17 @@ class HeuristicProcessor:
                     new_frame[state] = {"score": result["score"], "components": {}}
                 else:
                     new_frame[state]["score"] += result["score"]
+                    
+                new_frame[state]["score"] = int(new_frame[state]["score"])
                 new_frame[state]["components"][h.name] = result
 
         #aggregate
         for h in self._instances:
             if "aggregate" in h.contexts:
-                h.aggregate(msg)
+                h.aggregate(new_frame)
         
         self.current_frame = new_frame
-        print(self.current_frame)
+        print("cf", self.current_frame)
         
     def integration_configured(self, section, keys):
         if not "integrations" in CONFIG:
@@ -132,25 +135,26 @@ class HeuristicProcessor:
                 self.log("posting to pushover failed - " + str(e))
 
 processor = HeuristicProcessor()
-#processor.frigate_event('nesting', {"score": .92, "duration": 15})
-msg = {"ts": 0, "zones": {"Z1": 0, "Z2": 20, "Z3": 0, "Z4": 0, "Z5": 20, "Z6": 0, "Z7": 0, "Z8": 20, "Z9": 0,}}
-processor.send_motion_data(msg)
-processor.send_motion_data(msg)
-processor.send_motion_data(msg)
-processor.send_motion_data(msg)
-processor.send_motion_data(msg)
-processor.send_motion_data(msg)
-processor.send_motion_data(msg)
-sys.exit(0)
+
+if False:
+    #processor.frigate_event('nesting', {"score": .92, "duration": 15})
+    msg = {"ts": 0, "zones": {"Z1": 0, "Z2": 20, "Z3": 0, "Z4": 0, "Z5": 20, "Z6": 0, "Z7": 0, "Z8": 20, "Z9": 0,}}
+    processor.send_motion_data(msg)
+    processor.send_motion_data(msg)
+    processor.send_motion_data(msg)
+    processor.send_motion_data(msg)
+    processor.send_motion_data(msg)
+    processor.send_motion_data(msg)
+    processor.send_motion_data(msg)
+    sys.exit(0)
 
 client, topic = chelonest_config.mqtt_client(CONFIG, CAMERA + "_heuristic_processor", [CAMERA + "/#"])
+
 def on_message(client, userdata, message):
     # userdata is the structure we choose to provide, here it's a list()
     msg = json.loads(message.payload)
-    print("Received", msg)
+    #print("Received", msg)
     processor.send_motion_data(msg)
-
-
     
 client.on_message = on_message
 client.loop_forever()

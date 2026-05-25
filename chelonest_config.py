@@ -5,7 +5,7 @@ import paho.mqtt.client as mqtt
 
 load_dotenv()
 
-CHELONEST_VER = "0.1"
+CHELONEST_VER = "0.2"
 CONFIG_FILE = os.getenv("CHELONEST_CONFIG_FILE","config.json")
 
 print("Chelonest v", CHELONEST_VER)
@@ -88,9 +88,11 @@ def set_defaults_integrations(CONFIG):
             CONFIG["integrations"][k] = INT_MAP[k]
     
 def mqtt_client(CONFIG, clientid="chelonest_client", subs=None):
+    print("Clientid=", clientid)
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=clientid, userdata=None)
     topic = None
-    def on_disconnect(client, userdata, rc):
+
+    def on_disconnect(client, userdata, disconnect_flags, reason_code, properties):
         logging.info("Disconnected with result code: %s", rc)
         reconnect_count, reconnect_delay = 0, FIRST_RECONNECT_DELAY
         while reconnect_count < MAX_RECONNECT_COUNT:
@@ -122,7 +124,7 @@ def mqtt_client(CONFIG, clientid="chelonest_client", subs=None):
     
     #client.on_disconnect = on_disconnect
     client.on_connect = on_connect
-    
+    client.reconnect_delay_set(min_delay=1,max_delay=30)    
     if "integrations" in CONFIG and "mqtt" in CONFIG["integrations"]:
         print("MQTT: Host is", CONFIG["integrations"]["mqtt"]["host"])
         topic = CONFIG["integrations"]["mqtt"]["topic"]
