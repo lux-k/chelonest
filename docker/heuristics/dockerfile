@@ -11,7 +11,7 @@ COPY ./chelonest/docker/heuristics/run.sh /app/run.sh
 COPY ./chelonest/chelonest_config.py /app/
 COPY ./chelonest/chelonest_heuristic*.py /app/
 COPY ./chelonest/chelonest_watchdog.py /app/
-COPY ./chelonest/heuristics /app/
+COPY ./chelonest/heuristics/ /app/heuristics
 
 RUN chmod +x /app/*.sh
 

@@ -15,7 +15,7 @@ COPY ./chelonest/docker/detector/run.sh /app/run.sh
 
 COPY ./chelonest/chelonest_config.py /app/
 COPY ./chelonest/chelonest_detector.py /app/
-COPY ./chelonest/chelonest_detector_watchdog.py /app/
+COPY ./chelonest/chelonest_watchdog.py /app/
 
 RUN chmod +x /app/*.sh
 
