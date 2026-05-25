@@ -1,4 +1,4 @@
 python-dotenv
 paho-mqtt
 numpy
-opencv-python
+opencv-python-headless
