@@ -97,7 +97,7 @@ try:
         #now we move the files
         for camera in CAMERAS:
             shutil.move("snaps/"+camera,"snaps/"+camera+"_last")
-            WORKQUEUE.append("ffmpeg -y -f image2 -framerate 8 -pattern_type glob -i 'snaps/" + camera + "_last" + "/*.jpg' -s 704x480 -c:v libvpx-vp9 -b:v 0 -crf 32 -row-mt 1 -threads 4 -pix_fmt yuv420p movies/" + camera + "/" + DATE + ".webm");
+            WORKQUEUE.append("ffmpeg -y -f image2 -framerate 8 -pattern_type glob -i 'snaps/" + camera + "_last" + "/*.jpg' -s 704x480 -c:v libvpx-vp9 -b:v 0 -crf 32 -row-mt 1 -threads 4 -pix_fmt yuv420p -color_range tv movies/" + camera + "/" + DATE + ".webm");
             WORKQUEUE.append("rm -rf snaps/" + camera + "_last");
 
 except Exception as e:
